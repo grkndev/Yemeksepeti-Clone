@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#FA0250"
-      }
+      },
+      "package": "com.gweepcreative.YemeksepetiClone"
     },
     "web": {
       "bundler": "metro",
@@ -35,6 +36,12 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0f1d2713-407a-45b5-8a26-c39c9e7ee425"
+      }
+    },
+    "owner": "gweepcreative"
   }
 }
