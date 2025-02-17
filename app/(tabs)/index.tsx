@@ -1,9 +1,10 @@
-import { Animated, View, Text, TouchableOpacity, TextInput, FlatList, ScrollView } from 'react-native'
+import { Animated, View, Text, TouchableOpacity, ScrollView } from 'react-native'
 import React from 'react'
-import Icons from '@/components/Icons'
+import Filters from '@/components/Filters'
+import HeaderComponent from '@/components/Home/HeaderComponent'
+import SearchComponent from '@/components/Home/SearchComponent'
 
 
-const FiltersData = ['Sıralama', 'Mutfak', 'Min. Sepet Tutarı', 'Süper restoran', 'Ödeme Şekli']
 export default function HomeScreen() {
   const scrollA = React.useRef(new Animated.Value(0)).current
 
@@ -70,43 +71,10 @@ export default function HomeScreen() {
   )
 }
 
-function Filters() {
-  return (
-    <View className='px-4'>
-      <ScrollView
-        horizontal
-        contentContainerClassName='gap-2'
-        showsHorizontalScrollIndicator={false}
-        className='flex flex-row py-4 '>
 
-        <TouchableOpacity
-          className='border border-zinc-300 rounded-full py-1.5 px-4 flex flex-row gap-1 items-center justify-center'>
-          <Icons name='SlidersHorizontal' size={20} color='#000' />
-        </TouchableOpacity>
-
-        {
-          FiltersData.map((item, index) => {
-            return (
-              <TouchableOpacity
-                key={`item#${index}`}
-                className='border border-zinc-300 rounded-full py-1.5 px-4 flex flex-row gap-1 items-center justify-center'>
-                <Text className='font-bold text-sm'>{item}</Text>
-                <Icons name='ChevronDown' size={20} color='#000' />
-              </TouchableOpacity>
-            )
-          })
-        }
-
-
-
-
-      </ScrollView>
-    </View>
-  )
-}
 function Shortcuts() {
   return (
-    <ScrollView contentContainerClassName='gap-4' horizontal showsHorizontalScrollIndicator={false} className='flex flex-row py-4 border-b border-zinc-100'>
+    <ScrollView contentContainerClassName='gap-2' horizontal showsHorizontalScrollIndicator={false} className='flex flex-row py-4 border-b border-zinc-100'>
       {Array(7).fill(0).map((_, i) => {
         return (
           <TouchableOpacity
@@ -121,36 +89,3 @@ function Shortcuts() {
   )
 }
 
-function SearchComponent() {
-  const [search, setSearch] = React.useState('')
-  return (
-    <View className='bg-white flex flex-row gap-2 items-center rounded-full px-3'>
-      <Icons name='Search' color='#8d8b8e' />
-      <TextInput value={
-        search
-      } onChangeText={
-        setSearch
-      } placeholder='Restoran veya mağaza arayın' placeholderTextColor={"#8d8b8e"} className='text-black h-12 w-full' />
-    </View>
-  )
-}
-
-function HeaderComponent() {
-  return (<View className=' flex flex-row items-center  justify-between p-3'>
-    <View className='flex flex-row items-center gap-3'>
-      <Icons name='MapPin' size={24} />
-      <View className='flex flex-col justify-center items-start'>
-        <Text className='text-white font-semibold text-lg'>Ev</Text>
-        <Text className='text-white text-xs'>Yirmiikigün 91041</Text>
-      </View>
-    </View>
-    <View className='flex flex-row items-center gap-4'>
-      <TouchableOpacity className='p-2'>
-        <Icons name='Heart' size={20} />
-      </TouchableOpacity>
-      <TouchableOpacity className='p-2'>
-        <Icons name='ShoppingCart' size={20} />
-      </TouchableOpacity>
-    </View>
-  </View>)
-}
