@@ -18,8 +18,8 @@ const TabBarComponent = ({ state, descriptors, navigation }: BottomTabBarProps) 
                 <Text
                     className={
                         cn(
-                            currentRoute === 'index' && 'text-[#FA0250] font-bold',
-                            'text-xs text-zinc-400'
+                            'text-xs ',
+                            currentRoute === 'index' ? ' font-bold text-[#FA0250]' : 'text-zinc-400'
                         )
 
                     }>Yemek</Text>
@@ -33,8 +33,10 @@ const TabBarComponent = ({ state, descriptors, navigation }: BottomTabBarProps) 
                 <Icons name={"Store"} color={currentRoute === 'mahalle' ? '#FA0250' : '#a1a1aa'} />
                 <Text
                     className={
-                        cn(currentRoute === 'mahalle' && 'text-[#FA0250] font-bold',
-                            'text-xs text-zinc-400'
+
+                        cn(
+                            'text-xs',
+                            currentRoute === 'mahalle' ? ' font-bold text-[#FA0250]' : 'text-zinc-400'
                         )
                     }>Mahalle</Text>
             </TouchableOpacity>
@@ -48,8 +50,9 @@ const TabBarComponent = ({ state, descriptors, navigation }: BottomTabBarProps) 
                 <Icons name={"Search"} color={currentRoute === 'explore' ? '#FA0250' : '#a1a1aa'} />
 
                 <Text className={
-                    cn(currentRoute === 'explore' && 'text-[#FA0250] font-bold',
-                        'text-xs text-zinc-400'
+                    cn(
+                        'text-xs',
+                        currentRoute === 'explore' ? 'font-bold text-[#FA0250]' : 'text-zinc-400'
                     )
                 }>Arama</Text>
             </TouchableOpacity>
@@ -60,8 +63,9 @@ const TabBarComponent = ({ state, descriptors, navigation }: BottomTabBarProps) 
                 className={` flex h-full w-1/4 items-center justify-center`}>
                 <Icons name={"UserRound"} color={currentRoute === 'profile' ? '#FA0250' : '#a1a1aa'} />
                 <Text className={
-                    cn(currentRoute === 'profile' && 'text-[#FA0250] font-bold',
-                        'text-xs text-zinc-400'
+                    cn(
+                        'text-xs',
+                        currentRoute === 'profile' ? ' font-bold text-[#FA0250]' : 'text-zinc-400'
                     )
                 }>Hesabım</Text>
             </TouchableOpacity>

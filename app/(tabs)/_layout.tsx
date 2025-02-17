@@ -6,8 +6,11 @@ export default function TabLayout() {
   return (
     <Tabs
       tabBar={(props) => <TabBarComponent {...props} />}
+
       screenOptions={{
+        tabBarHideOnKeyboard: true,
         tabBarActiveTintColor: "#FA0250",
+        animation: 'shift',
         headerShown: false,
         tabBarStyle: {
           height: 64,
