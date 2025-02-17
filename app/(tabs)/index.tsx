@@ -4,6 +4,7 @@ import Filters from '@/components/Filters'
 import HeaderComponent from '@/components/Home/HeaderComponent'
 import SearchComponent from '@/components/Home/SearchComponent'
 import ReOrder from '@/components/Home/ReOrder'
+import Promotions from '@/components/Home/Promotions'
 
 
 export default function HomeScreen() {
@@ -58,6 +59,7 @@ export default function HomeScreen() {
               <Shortcuts />
               <Filters />
               <ReOrder />
+              <Promotions />
               {Array(30).fill(0).map((_, i) => {
                 return (
                   <View key={i} className='bg-white p-4 mb-3 rounded-lg'>

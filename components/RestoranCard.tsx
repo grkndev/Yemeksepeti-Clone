@@ -43,7 +43,7 @@ export default function RestoranCard() {
                         <View className='flex flex-col items-start  gap-2'>
                             {
                                 RestoranData.discount.map((item, index) => (
-                                    <Badge>{item.value}</Badge>
+                                    <Badge key={"Bage-" + item.type + "#" + index}>{item.value}</Badge>
                                 ))
                             }
                         </View>
