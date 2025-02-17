@@ -32,7 +32,7 @@ export default function HomeScreen() {
         <HeaderComponent />
       </Animated.View>
       <View className='flex-1'>
-        <Animated.View 
+        <Animated.View
           className='absolute z-10 w-full bg-ys px-3 pb-2'
           style={{
             top: searchBarPosition,
@@ -50,7 +50,17 @@ export default function HomeScreen() {
             scrollEventThrottle={16}
             contentContainerStyle={{ paddingTop: 55 }}
           >
-            <View className='p-3 rounded-t-3xl bg-white overflow-hidden'>
+            <View className='rounded-t-3xl bg-white overflow-hidden'>
+              <ScrollView contentContainerClassName='gap-4' horizontal showsHorizontalScrollIndicator={false} className='flex flex-row py-4 border-b border-zinc-100'>
+                {Array(7).fill(0).map((_, i) => {
+                  return (
+                    <TouchableOpacity key={i} className='p-4 flex flex-col gap-2 items-center justify-center'>
+                      <View className='bg-zinc-300 h-16 aspect-square rounded-full' />
+                      <Text className='text-black text-sm font-bold'>Index {i + 1}</Text>
+                    </TouchableOpacity>
+                  )
+                })}
+              </ScrollView>
               {Array(30).fill(0).map((_, i) => {
                 return (
                   <View key={i} className='bg-white p-4 mb-3 rounded-lg'>
