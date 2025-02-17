@@ -2,6 +2,8 @@ import { Animated, View, Text, TouchableOpacity, TextInput, FlatList, ScrollView
 import React from 'react'
 import Icons from '@/components/Icons'
 
+
+const FiltersData = ['Sıralama', 'Mutfak', 'Min. Sepet Tutarı', 'Süper restoran', 'Ödeme Şekli']
 export default function HomeScreen() {
   const scrollA = React.useRef(new Animated.Value(0)).current
 
@@ -51,16 +53,8 @@ export default function HomeScreen() {
             contentContainerStyle={{ paddingTop: 55 }}
           >
             <View className='rounded-t-3xl bg-white overflow-hidden'>
-              <ScrollView contentContainerClassName='gap-4' horizontal showsHorizontalScrollIndicator={false} className='flex flex-row py-4 border-b border-zinc-100'>
-                {Array(7).fill(0).map((_, i) => {
-                  return (
-                    <TouchableOpacity key={i} className='p-4 flex flex-col gap-2 items-center justify-center'>
-                      <View className='bg-zinc-300 h-16 aspect-square rounded-full' />
-                      <Text className='text-black text-sm font-bold'>Index {i + 1}</Text>
-                    </TouchableOpacity>
-                  )
-                })}
-              </ScrollView>
+              <Shortcuts />
+              <Filters />
               {Array(30).fill(0).map((_, i) => {
                 return (
                   <View key={i} className='bg-white p-4 mb-3 rounded-lg'>
@@ -73,6 +67,57 @@ export default function HomeScreen() {
         </View>
       </View>
     </View>
+  )
+}
+
+function Filters() {
+  return (
+    <View className='px-4'>
+      <ScrollView
+        horizontal
+        contentContainerClassName='gap-2'
+        showsHorizontalScrollIndicator={false}
+        className='flex flex-row py-4 '>
+
+        <TouchableOpacity
+          className='border border-zinc-300 rounded-full py-1.5 px-4 flex flex-row gap-1 items-center justify-center'>
+          <Icons name='SlidersHorizontal' size={20} color='#000' />
+        </TouchableOpacity>
+
+        {
+          FiltersData.map((item, index) => {
+            return (
+              <TouchableOpacity
+                key={`item#${index}`}
+                className='border border-zinc-300 rounded-full py-1.5 px-4 flex flex-row gap-1 items-center justify-center'>
+                <Text className='font-bold text-sm'>{item}</Text>
+                <Icons name='ChevronDown' size={20} color='#000' />
+              </TouchableOpacity>
+            )
+          })
+        }
+
+
+
+
+      </ScrollView>
+    </View>
+  )
+}
+function Shortcuts() {
+  return (
+    <ScrollView contentContainerClassName='gap-4' horizontal showsHorizontalScrollIndicator={false} className='flex flex-row py-4 border-b border-zinc-100'>
+      {Array(7).fill(0).map((_, i) => {
+        return (
+          <TouchableOpacity
+            key={i}
+            className='p-4 flex flex-col gap-2 items-center justify-center'>
+            <View className='bg-zinc-300 h-16 aspect-square rounded-full' />
+            <Text className='text-black text-sm font-bold'>Index {i + 1}</Text>
+          </TouchableOpacity>
+        )
+      })}
+    </ScrollView>
   )
 }
 
