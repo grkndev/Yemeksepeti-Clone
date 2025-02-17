@@ -7,7 +7,7 @@ import { cn } from '@/utils/utils'
 const TabBarComponent = ({ state, descriptors, navigation }: BottomTabBarProps) => {
     const currentRoute = state.routes[state.index].name
     return (
-        <View className='bg-white flex flex-row items-center justify-center w-full h-24'>
+        <View className='border-zinc-100 border-t bg-white flex flex-row items-center justify-center w-full h-24'>
 
             {/* HOME */}
             <TouchableOpacity
