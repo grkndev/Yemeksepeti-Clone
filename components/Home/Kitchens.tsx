@@ -21,13 +21,14 @@ export default function Kitchens() {
 
 function KitchenCard() {
     return (
-        <View className='w-[20vw] aspect-square rounded-xl overflow-hidden'>
+        <View className='flex flex-col gap-1 items-center justify-center overflow-hidden'>
             <Image
-                className='w-full h-full'
+                className='w-[20vw] aspect-square rounded-xl'
                 source={{ uri: "http://placehold.jp/500x500.png" }}
                 resizeMethod='scale'
                 resizeMode='contain'
             />
+            <Text className='text-sm font-bold'>Kitchen</Text>
         </View>
     )
 }
