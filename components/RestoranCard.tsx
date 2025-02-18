@@ -28,7 +28,7 @@ const RestoranData: RestoranDataType = {
     ],
     promoted: true,
     sponsored: true,
-    express: true
+    express: false
 }
 
 export default function RestoranCard({ data = RestoranData }: { data?: RestoranDataType }) {
