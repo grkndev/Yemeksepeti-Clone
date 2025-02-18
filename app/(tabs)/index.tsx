@@ -7,6 +7,7 @@ import ReOrder from '@/components/Home/ReOrder'
 import Promotions from '@/components/Home/Promotions'
 import Kitchens from '@/components/Home/Kitchens'
 import PopularBrands from '@/components/Home/PopularBrands'
+import ExpressDelivery from '@/components/Home/ExpressDelivery'
 
 
 export default function HomeScreen() {
@@ -64,13 +65,8 @@ export default function HomeScreen() {
               <Promotions />
               <Kitchens />
               <PopularBrands />
-              {Array(30).fill(0).map((_, i) => {
-                return (
-                  <View key={i} className='bg-white p-4 mb-3 rounded-lg'>
-                    <Text className='text-black'>Index {i + 1}</Text>
-                  </View>
-                )
-              })}
+              <ExpressDelivery />
+
             </View>
           </Animated.ScrollView>
         </View>
