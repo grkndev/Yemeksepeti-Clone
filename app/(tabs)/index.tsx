@@ -6,6 +6,7 @@ import SearchComponent from '@/components/Home/SearchComponent'
 import ReOrder from '@/components/Home/ReOrder'
 import Promotions from '@/components/Home/Promotions'
 import Kitchens from '@/components/Home/Kitchens'
+import PopularBrands from '@/components/Home/PopularBrands'
 
 
 export default function HomeScreen() {
@@ -62,7 +63,7 @@ export default function HomeScreen() {
               <ReOrder />
               <Promotions />
               <Kitchens />
-              {/* <PopulerBrands /> */}
+              <PopularBrands />
               {Array(30).fill(0).map((_, i) => {
                 return (
                   <View key={i} className='bg-white p-4 mb-3 rounded-lg'>
