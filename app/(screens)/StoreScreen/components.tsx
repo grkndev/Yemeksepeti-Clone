@@ -3,8 +3,7 @@ import React, { useState } from 'react'
 import Icons from '@/components/Icons'
 import Animated, { useAnimatedStyle, withSpring, interpolateColor } from 'react-native-reanimated'
 import { truncate } from '@/utils/utils'
-
-
+import { NativeSyntheticEvent, NativeScrollEvent } from 'react-native'
 
 export function DeliveryTime() {
     return (
@@ -19,6 +18,7 @@ export function DeliveryTime() {
         </View>
     )
 }
+
 export function CampaignCard() {
     return (
         <View className='w-[50vw]  border-2 border-zinc-200 rounded-xl p-3'>
@@ -205,3 +205,230 @@ export function Switch({
         </Pressable>
     )
 }
+
+interface Category {
+    id: string;
+    name: string;
+}
+
+interface MenuItem {
+    id: string;
+    categoryId: string;
+    name: string;
+    description: string;
+    price: number;
+    image?: string;
+}
+
+const CATEGORIES: Category[] = [
+    { id: '1', name: 'Başlangıçlar' },
+    { id: '2', name: 'Ana Yemekler' },
+    { id: '3', name: 'Pizzalar' },
+    { id: '4', name: 'Burgerler' },
+    { id: '5', name: 'İçecekler' },
+    { id: '6', name: 'Tatlılar' },
+];
+
+const MENU_ITEMS: MenuItem[] = [
+    { id: '1', categoryId: '1', name: 'Mercimek Çorbası', description: 'Geleneksel lezzet', price: 45 },
+    { id: '2', categoryId: '1', name: 'Karışık Salata', description: 'Mevsim yeşillikleri', price: 55 },
+    { id: '3', categoryId: '2', name: 'Izgara Köfte', description: 'Özel baharatlarla', price: 120 },
+    { id: '4', categoryId: '2', name: 'Tavuk Şiş', description: 'Özel soslu', price: 100 },
+    { id: '5', categoryId: '3', name: 'Margarita', description: 'Mozarella peyniri', price: 95 },
+    { id: '6', categoryId: '3', name: 'Karışık Pizza', description: 'Özel malzemeler', price: 125 },
+    { id: '7', categoryId: '4', name: 'Klasik Burger', description: 'Dana eti', price: 110 },
+    { id: '8', categoryId: '4', name: 'Cheese Burger', description: 'Cheddar peynirli', price: 120 },
+    { id: '9', categoryId: '5', name: 'Kola', description: '330ml', price: 25 },
+    { id: '10', categoryId: '5', name: 'Ayran', description: '250ml', price: 20 },
+    { id: '11', categoryId: '6', name: 'Künefe', description: 'Antep fıstıklı', price: 75 },
+    { id: '12', categoryId: '6', name: 'Sütlaç', description: 'Ev yapımı', price: 45 },
+];
+
+export const MenuSection = () => {
+    const [selectedCategory, setSelectedCategory] = React.useState(CATEGORIES[0].id);
+    const menuListRef = React.useRef<FlatList>(null);
+    const categoryScrollRef = React.useRef<ScrollView>(null);
+    const [menuData, setMenuData] = React.useState(() => {
+        return CATEGORIES.map(category => ({
+            category,
+            items: MENU_ITEMS.filter(item => item.categoryId === category.id)
+        }));
+    });
+
+    // Kategori yüksekliklerini hesapla
+    const getCategoryPositions = React.useCallback(() => {
+        let positions: { [key: string]: number } = {};
+        let currentPosition = 0;
+
+        menuData.forEach(section => {
+            positions[section.category.id] = currentPosition;
+            // Kategori başlığı (40px) + her ürün için yükseklik (100px)
+            currentPosition += 40 + (section.items.length * 100);
+        });
+
+        return positions;
+    }, [menuData]);
+
+    const handleCategoryPress = (categoryId: string) => {
+        setSelectedCategory(categoryId);
+        
+        // Kategorinin tam pozisyonunu hesapla
+        const positions = getCategoryPositions();
+        const targetPosition = positions[categoryId];
+
+        // FlatList'i doğru pozisyona scroll et
+        menuListRef.current?.scrollToOffset({
+            offset: targetPosition,
+            animated: true
+        });
+
+        // Kategori listesini güncelle
+        const categoryPosition = (parseInt(categoryId) - 1) * 80;
+        categoryScrollRef.current?.scrollTo({
+            x: categoryPosition,
+            animated: true
+        });
+    };
+
+    const handleScroll = React.useCallback((event: NativeScrollEvent) => {
+        const y = event.contentOffset.y;
+        const height = event.layoutMeasurement.height;
+        const contentHeight = event.contentSize.height;
+
+        // Her bir kategorinin yaklaşık yüksekliğini hesapla
+        const categoryHeights = menuData.map(section => {
+            // Her bir ürün için 100px + kategori başlığı için 40px
+            return section.items.length * 100 + 40;
+        });
+
+        // Kümülatif yükseklikleri hesapla
+        let accumulatedHeight = 0;
+        const categoryPositions = categoryHeights.map(h => {
+            const position = accumulatedHeight;
+            accumulatedHeight += h;
+            return position;
+        });
+
+        // Görünür alanın üst ve alt sınırlarını hesapla
+        const visibleTop = y;
+        const visibleBottom = y + height;
+
+        // Hangi kategorilerin görünür olduğunu bul
+        let visibleCategoryId = selectedCategory;
+        for (let i = 0; i < menuData.length; i++) {
+            const categoryTop = categoryPositions[i];
+            const categoryBottom = categoryTop + categoryHeights[i];
+
+            // Kategorinin son ürünü hala görünür alanda ise
+            if (categoryTop <= visibleBottom && categoryBottom >= visibleTop) {
+                visibleCategoryId = menuData[i].category.id;
+                break;
+            }
+        }
+
+        // Eğer görünür kategori değiştiyse, kategori listesini güncelle
+        if (visibleCategoryId !== selectedCategory) {
+            setSelectedCategory(visibleCategoryId);
+            const categoryPosition = (parseInt(visibleCategoryId) - 1) * 80;
+            categoryScrollRef.current?.scrollTo({
+                x: categoryPosition,
+                animated: true
+            });
+        }
+    }, [selectedCategory, menuData]);
+
+    const renderSectionHeader = ({ section }: { section: { category: Category } }) => (
+        <Text className="px-4 py-2 text-base font-bold text-zinc-800 bg-zinc-50">
+            {section.category.name}
+        </Text>
+    );
+
+    const renderItem = ({ item }: { item: MenuItem }) => (
+        <TouchableOpacity className="p-4 border-b border-zinc-100 active:bg-zinc-50 bg-white">
+            <View className="flex-row justify-between items-start gap-4">
+                <View className="flex-1">
+                    <Text className="text-base font-semibold text-zinc-900 mb-1">
+                        {item.name}
+                    </Text>
+                    <Text className="text-sm text-zinc-500 mb-2">
+                        {item.description}
+                    </Text>
+                    <Text className="text-primary font-bold">
+                        {item.price.toFixed(2)} TL
+                    </Text>
+                </View>
+                {item.image && (
+                    <Image
+                        source={{ uri: item.image }}
+                        className="w-24 h-24 rounded-lg"
+                    />
+                )}
+            </View>
+        </TouchableOpacity>
+    );
+
+    const getItemLayout = (data: any, index: number) => ({
+        length: 120, // Yaklaşık bir öğe yüksekliği
+        offset: 120 * index,
+        index,
+    });
+
+    return (
+        <View className="flex-1">
+            {/* Sticky kategori listesi */}
+            <View className="bg-white border-b border-zinc-100">
+                <ScrollView
+                    ref={categoryScrollRef}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{ padding: 8 }}
+                >
+                    {CATEGORIES.map((category) => (
+                        <TouchableOpacity
+                            key={category.id}
+                            onPress={() => handleCategoryPress(category.id)}
+                            className={`px-4 py-2 mr-2 rounded-full border ${
+                                selectedCategory === category.id
+                                    ? 'bg-ys border-ys'
+                                    : 'bg-white border-zinc-200'
+                            }`}
+                        >
+                            <Text
+                                className={`${
+                                    selectedCategory === category.id
+                                        ? 'text-white font-semibold'
+                                        : 'text-zinc-700'
+                                }`}
+                            >
+                                {category.name}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
+            </View>
+
+            {/* Menü listesi */}
+            <FlatList
+                ref={menuListRef}
+                data={menuData}
+                renderItem={({ item }) => (
+                    <View>
+                        {renderSectionHeader({ section: { category: item.category } })}
+                        <View className="bg-white">
+                            {item.items.map((menuItem: MenuItem) => renderItem({ item: menuItem }))}
+                        </View>
+                    </View>
+                )}
+                keyExtractor={(item) => item.category.id}
+                onScroll={({ nativeEvent }) => handleScroll(nativeEvent)}
+                scrollEventThrottle={16}
+                getItemLayout={getItemLayout}
+                removeClippedSubviews={true}
+                initialNumToRender={3}
+                maxToRenderPerBatch={3}
+                windowSize={5}
+                contentContainerStyle={{ paddingBottom: 20 }}
+            />
+        </View>
+    );
+};

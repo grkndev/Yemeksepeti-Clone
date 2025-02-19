@@ -1,6 +1,6 @@
 import { View } from 'react-native'
 import React from 'react'
-import { Campaigns, DeliveryTime, Header, StoreInfo } from './components'
+import { Campaigns, DeliveryTime, Header, StoreInfo, MenuSection } from './components'
 
 
 export default function StoreScreen() {
@@ -10,6 +10,7 @@ export default function StoreScreen() {
             <StoreInfo />
             <DeliveryTime />
             <Campaigns />
+            <MenuSection />
         </View>
     )
 }
