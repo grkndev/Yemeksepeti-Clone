@@ -15,10 +15,10 @@ export default function Profile() {
           <Text className='font-bold'>Hesabım</Text>
         </View>
 
-        <View className='w-full flex flex-row gap-2 items-center justify-between'>
-          <Button />
-          <Button />
-          <Button />
+        <View className='w-[30vw] flex flex-row gap-2 items-center justify-between'>
+          <Button title='Siparişlerim' iconName='ReceiptText' />
+          <Button title='Favoriler' iconName='Heart' />
+          <Button title='Adreslerim' iconName='MapPin' />
         </View>
         <View>
           <TouchableOpacity
@@ -98,13 +98,13 @@ export default function Profile() {
   )
 }
 
-function Button() {
+function Button({ title, iconName }: { title?: string, iconName?: any }) {
   return (
     <TouchableOpacity
-      className='bg-white flex flex-col gap-2 px-5 py-4 rounded-2xl items-center justify-center border-[1.5px] border-zinc-300'
+      className='bg-white w-full flex flex-col gap-2 py-4 rounded-2xl items-center justify-center border-[1.5px] border-zinc-300'
     >
-      <Icons name='ReceiptText' size={24} color='#52525b' />
-      <Text className='text-zinc-700 font-medium'>Siparişlerim</Text>
+      <Icons name={iconName} size={24} color='#52525b' />
+      <Text className='text-zinc-700 font-medium'>{title}</Text>
     </TouchableOpacity>
   )
 }
