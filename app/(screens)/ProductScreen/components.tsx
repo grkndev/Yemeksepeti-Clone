@@ -2,10 +2,15 @@ import { View, Text, TouchableOpacity, Image, TextInput, Platform } from 'react-
 import React from 'react'
 import { ProductHeaderProps, OptionChoiceProps, OptionGroupProps, AddToCartButtonProps, ProductNoteProps } from './types'
 import Icons from '@/components/Icons'
+import { useRouter } from 'expo-router'
 
 export const ProductHeader = ({ name, description, image, price, totalPrice, discount }: ProductHeaderProps) => {
+  const router = useRouter()
   return (
     <>
+      <TouchableOpacity onPress={() => router.back()} className='absolute top-4 left-4 z-10 bg-black/25 rounded-full p-2'>
+        <Icons name="X" size={24} color="#fff" />
+      </TouchableOpacity>
       <Image source={{ uri: image }} className="w-full aspect-video" />
       <View className="p-4">
         <Text className="text-2xl font-bold">{name}</Text>
