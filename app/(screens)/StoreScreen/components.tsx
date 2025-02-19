@@ -7,6 +7,7 @@ import Icons from '@/components/Icons'
 import { truncate } from '@/utils/utils'
 import { CATEGORIES, MENU_ITEMS, Category, MenuItem } from './types'
 
+
 export function Header() {
     const router = useRouter()
     return (
@@ -212,6 +213,7 @@ export const MenuSection = () => {
             items: MENU_ITEMS.filter(item => item.categoryId === category.id)
         }));
     });
+    const router = useRouter()
 
     // Kategori yüksekliklerini hesapla
     const getCategoryPositions = React.useCallback(() => {
@@ -302,7 +304,7 @@ export const MenuSection = () => {
     );
 
     const renderItem = ({ item }: { item: MenuItem }) => (
-        <TouchableOpacity className="p-4 border-b border-zinc-100 active:bg-zinc-50 bg-white">
+        <TouchableOpacity onPress={() => router.push("/(screens)/ProductScreen/Screen")} className="p-4 border-b border-zinc-100 active:bg-zinc-50 bg-white">
             <View className="flex-row justify-between items-start gap-1">
                 <View className="flex-1">
                     <Text className="text-base font-semibold text-zinc-900 mb-1">
@@ -368,7 +370,7 @@ export const MenuSection = () => {
             <FlatList
                 ref={menuListRef}
                 data={menuData}
-                renderItem={({ item,index }) => (
+                renderItem={({ item, index }) => (
                     <View key={`menu-section-${index}`}>
                         {renderSectionHeader({ section: { category: item.category } })}
                         <View className="bg-white">
