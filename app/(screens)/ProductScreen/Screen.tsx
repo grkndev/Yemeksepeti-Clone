@@ -1,4 +1,4 @@
-import { View, ScrollView } from 'react-native'
+import { View, ScrollView, Alert } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import * as Crypto from 'expo-crypto'
@@ -7,14 +7,18 @@ import { ProductHeader, OptionGroup, AddToCartButton, ProductNote } from './comp
 import { SelectedOptions } from './types'
 import { useStore } from '../../../store/useStore'
 import { useRouter } from 'expo-router'
+import { useLocalSearchParams } from 'expo-router'
 
 export default function ProductScreen() {
+  // const { storeId, storeName } = useLocalSearchParams();
+  const storeId = 6789832
+  const storeName = "Maydonoz Döner"
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
   const [totalPrice, setTotalPrice] = useState(data.price);
   const [note, setNote] = useState('');
   const [quantity, setQuantity] = useState(1);
   const router = useRouter();
-  const { addToCart } = useStore();
+  const { addToCart, clearCart } = useStore();
 
   // Zorunlu seçimlerin otomatik seçilmesi
   useEffect(() => {
@@ -88,15 +92,43 @@ export default function ProductScreen() {
   const handleAddToCart = () => {
     const cartItem = {
       id: Crypto.randomUUID(),
+      productId: data.id,
       name: data.name,
       price: data.price,
       quantity: quantity,
       totalPrice: totalPrice,
       image: data.image,
       selectedOptions: selectedOptions,
-      note: note
+      note: note,
+      storeId: storeId.toString(),
+      storeName: storeName
     };
-    addToCart(cartItem);
+
+    const result = addToCart(cartItem);
+    
+    if (!result.success && result.message) {
+      Alert.alert(
+        "Farklı Mağaza",
+        result.message,
+        [
+          {
+            text: "İptal",
+            style: "cancel"
+          },
+          {
+            text: "Sepeti Temizle",
+            style: "destructive",
+            onPress: () => {
+              clearCart();
+              addToCart(cartItem);
+              router.back();
+            }
+          }
+        ]
+      );
+      return;
+    }
+
     router.back();
   };
 

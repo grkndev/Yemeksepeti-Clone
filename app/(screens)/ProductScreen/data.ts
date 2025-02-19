@@ -1,4 +1,5 @@
 const data = {
+    id: "pizza-001",
     image: "http://placehold.jp/1280x720.png",
     name: "Karışık Pizza",
     price: 180,
