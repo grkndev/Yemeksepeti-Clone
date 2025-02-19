@@ -49,7 +49,7 @@ export function Campaigns() {
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerClassName="gap-2"
-              
+
             />
         </View>
     )
@@ -230,18 +230,18 @@ const CATEGORIES: Category[] = [
 ];
 
 const MENU_ITEMS: MenuItem[] = [
-    { id: '1', categoryId: '1', name: 'Mercimek Çorbası', description: 'Geleneksel lezzet', price: 45 },
-    { id: '2', categoryId: '1', name: 'Karışık Salata', description: 'Mevsim yeşillikleri', price: 55 },
-    { id: '3', categoryId: '2', name: 'Izgara Köfte', description: 'Özel baharatlarla', price: 120 },
-    { id: '4', categoryId: '2', name: 'Tavuk Şiş', description: 'Özel soslu', price: 100 },
-    { id: '5', categoryId: '3', name: 'Margarita', description: 'Mozarella peyniri', price: 95 },
-    { id: '6', categoryId: '3', name: 'Karışık Pizza', description: 'Özel malzemeler', price: 125 },
-    { id: '7', categoryId: '4', name: 'Klasik Burger', description: 'Dana eti', price: 110 },
-    { id: '8', categoryId: '4', name: 'Cheese Burger', description: 'Cheddar peynirli', price: 120 },
-    { id: '9', categoryId: '5', name: 'Kola', description: '330ml', price: 25 },
-    { id: '10', categoryId: '5', name: 'Ayran', description: '250ml', price: 20 },
-    { id: '11', categoryId: '6', name: 'Künefe', description: 'Antep fıstıklı', price: 75 },
-    { id: '12', categoryId: '6', name: 'Sütlaç', description: 'Ev yapımı', price: 45 },
+    { id: '1', categoryId: '1', name: 'Mercimek Çorbası', description: 'Geleneksel lezzet', price: 45, image: 'http://placehold.jp/200x200.png' },
+    { id: '2', categoryId: '1', name: 'Karışık Salata', description: 'Mevsim yeşillikleri', price: 55, image: 'http://placehold.jp/200x200.png' },
+    { id: '3', categoryId: '2', name: 'Izgara Köfte', description: 'Özel baharatlarla', price: 120, image: 'http://placehold.jp/200x200.png' },
+    { id: '4', categoryId: '2', name: 'Tavuk Şiş', description: 'Özel soslu', price: 100, image: 'http://placehold.jp/200x200.png' },
+    { id: '5', categoryId: '3', name: 'Margarita', description: 'Mozarella peyniri', price: 95, image: 'http://placehold.jp/200x200.png' },
+    { id: '6', categoryId: '3', name: 'Karışık Pizza', description: 'Özel malzemeler', price: 125, image: 'http://placehold.jp/200x200.png' },
+    { id: '7', categoryId: '4', name: 'Klasik Burger', description: 'Dana eti', price: 110, image: 'http://placehold.jp/200x200.png' },
+    { id: '8', categoryId: '4', name: 'Cheese Burger', description: 'Cheddar peynirli', price: 120, image: 'http://placehold.jp/200x200.png' },
+    { id: '9', categoryId: '5', name: 'Kola', description: '330ml', price: 25, image: 'http://placehold.jp/200x200.png' },
+    { id: '10', categoryId: '5', name: 'Ayran', description: '250ml', price: 20, image: 'http://placehold.jp/200x200.png' },
+    { id: '11', categoryId: '6', name: 'Künefe', description: 'Antep fıstıklı', price: 75, image: 'http://placehold.jp/200x200.png' },
+    { id: '12', categoryId: '6', name: 'Sütlaç', description: 'Ev yapımı', price: 45, image: 'http://placehold.jp/200x200.png' },
 ];
 
 export const MenuSection = () => {
@@ -271,14 +271,14 @@ export const MenuSection = () => {
 
     const handleCategoryPress = (categoryId: string) => {
         setSelectedCategory(categoryId);
-        
+
         // Kategorinin tam pozisyonunu hesapla
         const positions = getCategoryPositions();
         const targetPosition = positions[categoryId];
 
         // FlatList'i doğru pozisyona scroll et
         menuListRef.current?.scrollToOffset({
-            offset: targetPosition,
+            offset: targetPosition+30,
             animated: true
         });
 
@@ -345,17 +345,18 @@ export const MenuSection = () => {
 
     const renderItem = ({ item }: { item: MenuItem }) => (
         <TouchableOpacity className="p-4 border-b border-zinc-100 active:bg-zinc-50 bg-white">
-            <View className="flex-row justify-between items-start gap-4">
+            <View className="flex-row justify-between items-start gap-1">
                 <View className="flex-1">
                     <Text className="text-base font-semibold text-zinc-900 mb-1">
                         {item.name}
                     </Text>
-                    <Text className="text-sm text-zinc-500 mb-2">
-                        {item.description}
-                    </Text>
-                    <Text className="text-primary font-bold">
+                    <Text>
                         {item.price.toFixed(2)} TL
                     </Text>
+                    <Text className="text-sm text-zinc-500 my-2">
+                        {item.description}
+                    </Text>
+
                 </View>
                 {item.image && (
                     <Image
@@ -387,18 +388,16 @@ export const MenuSection = () => {
                         <TouchableOpacity
                             key={category.id}
                             onPress={() => handleCategoryPress(category.id)}
-                            className={`px-4 py-2 mr-2 rounded-full border ${
-                                selectedCategory === category.id
-                                    ? 'bg-ys border-ys'
-                                    : 'bg-white border-zinc-200'
-                            }`}
+                            className={`px-4 py-2 mr-2 rounded-full border ${selectedCategory === category.id
+                                ? 'bg-ys border-ys'
+                                : 'bg-white border-zinc-200'
+                                }`}
                         >
                             <Text
-                                className={`${
-                                    selectedCategory === category.id
-                                        ? 'text-white font-semibold'
-                                        : 'text-zinc-700'
-                                }`}
+                                className={`${selectedCategory === category.id
+                                    ? 'text-white font-semibold'
+                                    : 'text-zinc-700'
+                                    }`}
                             >
                                 {category.name}
                             </Text>
