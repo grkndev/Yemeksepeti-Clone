@@ -4,6 +4,7 @@ import Icons from './Icons'
 import Badge from './Badge'
 import { cn } from '@/utils/utils'
 import { RestoranDataType } from '@/utils/types/Restoran.type'
+import { useRouter } from 'expo-router'
 
 const RestoranData: RestoranDataType = {
     name: 'Maydonoz Döner',
@@ -32,8 +33,9 @@ const RestoranData: RestoranDataType = {
 }
 
 export default function RestoranCard({ data = RestoranData }: { data?: RestoranDataType }) {
+    const router = useRouter()
     return (
-        <TouchableOpacity className='border border-zinc-300 w-[66vw] rounded-lg flex flex-col overflow-hidden'>
+        <TouchableOpacity onPress={() => router.push("/(screens)/StoreScreen/Screen")} className='border border-zinc-300 w-[66vw] rounded-lg flex flex-col overflow-hidden'>
             <ImageBackground
                 source={{ uri: data.image }}
                 resizeMethod='scale'
