@@ -26,8 +26,7 @@
     "plugins": [
       "expo-router",
       [
-        "expo-splash-screen",
-        {
+        "expo-splash-screen", {
           "backgroundColor": "#FA0250",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 1024
