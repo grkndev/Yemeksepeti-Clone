@@ -1,10 +1,57 @@
-import { View, Text, Image, TouchableOpacity, Pressable, ScrollView, FlatList } from 'react-native'
 import React, { useState } from 'react'
-import Icons from '@/components/Icons'
-import Animated, { useAnimatedStyle, withSpring, interpolateColor } from 'react-native-reanimated'
-import { truncate } from '@/utils/utils'
-import { NativeSyntheticEvent, NativeScrollEvent } from 'react-native'
+import { View, Text, Image, TouchableOpacity, Pressable, ScrollView, FlatList, NativeScrollEvent } from 'react-native'
+import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated'
+import { useRouter } from 'expo-router'
 
+import Icons from '@/components/Icons'
+import { truncate } from '@/utils/utils'
+import { CATEGORIES, MENU_ITEMS, Category, MenuItem } from './types'
+
+export function Header() {
+    const router = useRouter()
+    return (
+        <View className='flex flex-row justify-between relative h-16'>
+            <View className='z-10 '>
+                <TouchableOpacity onPress={() => router.back()} className='h-full w-16  flex flex-row justify-center items-center '>
+                    <Icons name='ArrowLeft' size={24} color='#000' />
+                </TouchableOpacity>
+            </View>
+
+            {/* Store Brand */}
+            <View className='absolute left-1/2 -translate-x-1/2'>
+                <Image
+                    source={{ uri: 'http://placehold.jp/200x200.png' }}
+                    className='w-16 h-16'
+                />
+            </View>
+
+            <View className='flex flex-row gap-3 items-center z-10 pr-2'>
+                <TouchableOpacity className='p-1'>
+                    <Icons name='Info' size={20} color='#000' />
+                </TouchableOpacity>
+                <TouchableOpacity className='p-1'>
+                    <Icons name='Heart' size={20} color='#000' />
+                </TouchableOpacity>
+                <TouchableOpacity className='p-1'>
+                    <Icons name='Share' size={20} color='#000' />
+                </TouchableOpacity>
+            </View>
+        </View>
+    )
+}
+export function StoreInfo() {
+    return (
+        <View className='p-4 flex flex-col items-center'>
+            <Text className='font-bold text-xl'>Maydonoz Döner</Text>
+            <View>
+                <View className='flex flex-row items-center gap-2'>
+                    <Rating rating={3.6} />
+                    <Text className='font-bold'>3.6 (500+ değerlendirme)</Text>
+                </View>
+            </View>
+        </View>
+    )
+}
 export function DeliveryTime() {
     return (
         <View className='flex flex-row items-center justify-center gap-3 px-4 border-zinc-200 border-2 p-4 mx-4 rounded-xl'>
@@ -18,23 +65,6 @@ export function DeliveryTime() {
         </View>
     )
 }
-
-export function CampaignCard() {
-    return (
-        <View className='w-[50vw]  border-2 border-zinc-200 rounded-xl p-3'>
-            <View className='flex flex-row gap-1 items-center'>
-                <Icons name="BadgePercent" size={24} color='#fff' fill={"#FA0250"} />
-                <Text className='font-bold text-lg'>23% indirim</Text>
-            </View>
-            <View>
-                <Text className='text-xs'>
-                    {truncate("Min. sepet tutarı 0TL Seçili ürünlerde geçerlidir. Otomatik uygulanır.", 57, 57)}
-                </Text>
-            </View>
-        </View>
-    )
-}
-
 export function Campaigns() {
     return (
         <View className='px-4 py-2'>
@@ -54,7 +84,21 @@ export function Campaigns() {
         </View>
     )
 }
-
+export function CampaignCard() {
+    return (
+        <View className='w-[50vw]  border-2 border-zinc-200 rounded-xl p-3'>
+            <View className='flex flex-row gap-1 items-center'>
+                <Icons name="BadgePercent" size={24} color='#fff' fill={"#FA0250"} />
+                <Text className='font-bold text-lg'>23% indirim</Text>
+            </View>
+            <View>
+                <Text className='text-xs'>
+                    {truncate("Min. sepet tutarı 0TL Seçili ürünlerde geçerlidir. Otomatik uygulanır.", 57, 57)}
+                </Text>
+            </View>
+        </View>
+    )
+}
 export function Rating({ rating }: {
     rating: number
 }) {
@@ -85,53 +129,6 @@ export function Rating({ rating }: {
         </View>
     )
 }
-
-export function StoreInfo() {
-    return (
-        <View className='p-4 flex flex-col items-center'>
-            <Text className='font-bold text-xl'>Maydonoz Döner</Text>
-            <View>
-                <View className='flex flex-row items-center gap-2'>
-                    <Rating rating={3.6} />
-                    <Text className='font-bold'>3.6 (500+ değerlendirme)</Text>
-                </View>
-            </View>
-        </View>
-    )
-}
-
-export function Header() {
-    return (
-        <View className='flex flex-row justify-between relative h-16'>
-            <View className='z-10 '>
-                <TouchableOpacity className='h-full w-16  flex flex-row justify-center items-center '>
-                    <Icons name='ArrowLeft' size={24} color='#000' />
-                </TouchableOpacity>
-            </View>
-
-            {/* Store Brand */}
-            <View className='absolute left-1/2 -translate-x-1/2'>
-                <Image
-                    source={{ uri: 'http://placehold.jp/200x200.png' }}
-                    className='w-16 h-16'
-                />
-            </View>
-
-            <View className='flex flex-row gap-3 items-center z-10 pr-2'>
-                <TouchableOpacity className='p-1'>
-                    <Icons name='Info' size={20} color='#000' />
-                </TouchableOpacity>
-                <TouchableOpacity className='p-1'>
-                    <Icons name='Heart' size={20} color='#000' />
-                </TouchableOpacity>
-                <TouchableOpacity className='p-1'>
-                    <Icons name='Share' size={20} color='#000' />
-                </TouchableOpacity>
-            </View>
-        </View>
-    )
-}
-
 export function Switch({
     value = false,
     onValueChange,
@@ -205,45 +202,6 @@ export function Switch({
         </Pressable>
     )
 }
-
-interface Category {
-    id: string;
-    name: string;
-}
-
-interface MenuItem {
-    id: string;
-    categoryId: string;
-    name: string;
-    description: string;
-    price: number;
-    image?: string;
-}
-
-const CATEGORIES: Category[] = [
-    { id: '1', name: 'Başlangıçlar' },
-    { id: '2', name: 'Ana Yemekler' },
-    { id: '3', name: 'Pizzalar' },
-    { id: '4', name: 'Burgerler' },
-    { id: '5', name: 'İçecekler' },
-    { id: '6', name: 'Tatlılar' },
-];
-
-const MENU_ITEMS: MenuItem[] = [
-    { id: '1', categoryId: '1', name: 'Mercimek Çorbası', description: 'Geleneksel lezzet', price: 45, image: 'http://placehold.jp/200x200.png' },
-    { id: '2', categoryId: '1', name: 'Karışık Salata', description: 'Mevsim yeşillikleri', price: 55, image: 'http://placehold.jp/200x200.png' },
-    { id: '3', categoryId: '2', name: 'Izgara Köfte', description: 'Özel baharatlarla', price: 120, image: 'http://placehold.jp/200x200.png' },
-    { id: '4', categoryId: '2', name: 'Tavuk Şiş', description: 'Özel soslu', price: 100, image: 'http://placehold.jp/200x200.png' },
-    { id: '5', categoryId: '3', name: 'Margarita', description: 'Mozarella peyniri', price: 95, image: 'http://placehold.jp/200x200.png' },
-    { id: '6', categoryId: '3', name: 'Karışık Pizza', description: 'Özel malzemeler', price: 125, image: 'http://placehold.jp/200x200.png' },
-    { id: '7', categoryId: '4', name: 'Klasik Burger', description: 'Dana eti', price: 110, image: 'http://placehold.jp/200x200.png' },
-    { id: '8', categoryId: '4', name: 'Cheese Burger', description: 'Cheddar peynirli', price: 120, image: 'http://placehold.jp/200x200.png' },
-    { id: '9', categoryId: '5', name: 'Kola', description: '330ml', price: 25, image: 'http://placehold.jp/200x200.png' },
-    { id: '10', categoryId: '5', name: 'Ayran', description: '250ml', price: 20, image: 'http://placehold.jp/200x200.png' },
-    { id: '11', categoryId: '6', name: 'Künefe', description: 'Antep fıstıklı', price: 75, image: 'http://placehold.jp/200x200.png' },
-    { id: '12', categoryId: '6', name: 'Sütlaç', description: 'Ev yapımı', price: 45, image: 'http://placehold.jp/200x200.png' },
-];
-
 export const MenuSection = () => {
     const [selectedCategory, setSelectedCategory] = React.useState(CATEGORIES[0].id);
     const menuListRef = React.useRef<FlatList>(null);
@@ -278,7 +236,7 @@ export const MenuSection = () => {
 
         // FlatList'i doğru pozisyona scroll et
         menuListRef.current?.scrollToOffset({
-            offset: targetPosition+30,
+            offset: targetPosition + 30,
             animated: true
         });
 
@@ -361,7 +319,7 @@ export const MenuSection = () => {
                 {item.image && (
                     <Image
                         source={{ uri: item.image }}
-                        className="w-24 h-24 rounded-lg"
+                        className="w-32 h-32 rounded-lg"
                     />
                 )}
             </View>
