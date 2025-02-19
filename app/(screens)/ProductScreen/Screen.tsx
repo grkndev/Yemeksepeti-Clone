@@ -1,15 +1,20 @@
 import { View, ScrollView } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { StatusBar } from 'expo-status-bar'
+import * as Crypto from 'expo-crypto'
 import data from './data'
 import { ProductHeader, OptionGroup, AddToCartButton, ProductNote } from './components'
 import { SelectedOptions } from './types'
+import { useStore } from '../../../store/useStore'
+import { useRouter } from 'expo-router'
 
 export default function ProductScreen() {
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
   const [totalPrice, setTotalPrice] = useState(data.price);
   const [note, setNote] = useState('');
   const [quantity, setQuantity] = useState(1);
+  const router = useRouter();
+  const { addToCart } = useStore();
 
   // Zorunlu seçimlerin otomatik seçilmesi
   useEffect(() => {
@@ -48,7 +53,7 @@ export default function ProductScreen() {
 
   const calculateTotalPrice = () => {
     let total = data.price;
-    
+
     Object.entries(selectedOptions).forEach(([optionName, selectedChoice]) => {
       const option = data.options.find(opt => opt.name === optionName);
       if (!option) return;
@@ -67,7 +72,7 @@ export default function ProductScreen() {
     if (data.discount) {
       total = total * (1 - data.discount / 100);
     }
-    
+
     total = total * quantity;
     setTotalPrice(total);
   };
@@ -81,10 +86,18 @@ export default function ProductScreen() {
   };
 
   const handleAddToCart = () => {
-    // Sepete ekleme fonksiyonu buraya gelecek
-    console.log('Seçilen opsiyonlar:', selectedOptions);
-    console.log('Sipariş notu:', note);
-    console.log('Miktar:', quantity);
+    const cartItem = {
+      id: Crypto.randomUUID(),
+      name: data.name,
+      price: data.price,
+      quantity: quantity,
+      totalPrice: totalPrice,
+      image: data.image,
+      selectedOptions: selectedOptions,
+      note: note
+    };
+    addToCart(cartItem);
+    router.back();
   };
 
   // Zorunlu seçimlerin kontrolü
@@ -125,7 +138,7 @@ export default function ProductScreen() {
         />
       </ScrollView>
 
-      <AddToCartButton 
+      <AddToCartButton
         onPress={handleAddToCart}
         disabled={!areRequiredOptionsSelected()}
         quantity={quantity}

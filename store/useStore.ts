@@ -1,11 +1,21 @@
 import { create } from 'zustand'
+import { SelectedOptions } from '../app/(screens)/ProductScreen/types'
+
+interface CartItem {
+  id: string
+  name: string
+  price: number
+  quantity: number
+  totalPrice: number
+  image: string
+  selectedOptions: SelectedOptions
+  note?: string
+}
 
 interface StoreState {
-  // Örnek state değerleri
-  cart: any[]
+  cart: CartItem[]
   totalPrice: number
-  // State değiştirme methodları
-  addToCart: (item: any) => void
+  addToCart: (item: CartItem) => void
   removeFromCart: (itemId: string) => void
   clearCart: () => void
 }
@@ -17,14 +27,17 @@ export const useStore = create<StoreState>((set) => ({
   addToCart: (item) => 
     set((state) => ({
       cart: [...state.cart, item],
-      totalPrice: state.totalPrice + (item.price || 0)
+      totalPrice: state.totalPrice + item.totalPrice
     })),
 
   removeFromCart: (itemId) =>
-    set((state) => ({
-      cart: state.cart.filter((item) => item.id !== itemId),
-      totalPrice: state.totalPrice - (state.cart.find(item => item.id === itemId)?.price || 0)
-    })),
+    set((state) => {
+      const itemToRemove = state.cart.find(item => item.id === itemId);
+      return {
+        cart: state.cart.filter((item) => item.id !== itemId),
+        totalPrice: state.totalPrice - (itemToRemove?.totalPrice || 0)
+      };
+    }),
 
   clearCart: () => 
     set({
