@@ -303,8 +303,8 @@ export const MenuSection = () => {
         </Text>
     );
 
-    const renderItem = ({ item }: { item: MenuItem }) => (
-        <TouchableOpacity onPress={() => router.push("/(screens)/ProductScreen/Screen")} className="p-4 border-b border-zinc-100 active:bg-zinc-50 bg-white">
+    const renderItem = ({ item, index }: { item: MenuItem, index: number }) => (
+        <TouchableOpacity key={`menu-section-product-${index}`} onPress={() => router.push("/(screens)/ProductScreen/Screen")} className="p-4 border-b border-zinc-100 active:bg-zinc-50 bg-white">
             <View className="flex-row justify-between items-start gap-1">
                 <View className="flex-1">
                     <Text className="text-base font-semibold text-zinc-900 mb-1">
@@ -374,7 +374,7 @@ export const MenuSection = () => {
                     <View key={`menu-section-${index}`}>
                         {renderSectionHeader({ section: { category: item.category } })}
                         <View className="bg-white">
-                            {item.items.map((menuItem: MenuItem) => renderItem({ item: menuItem }))}
+                            {item.items.map((menuItem: MenuItem, index: number) => renderItem({ item: menuItem, index }))}
                         </View>
                     </View>
                 )}
