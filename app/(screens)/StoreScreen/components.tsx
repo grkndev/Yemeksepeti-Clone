@@ -368,8 +368,8 @@ export const MenuSection = () => {
             <FlatList
                 ref={menuListRef}
                 data={menuData}
-                renderItem={({ item }) => (
-                    <View>
+                renderItem={({ item,index }) => (
+                    <View key={`menu-section-${index}`}>
                         {renderSectionHeader({ section: { category: item.category } })}
                         <View className="bg-white">
                             {item.items.map((menuItem: MenuItem) => renderItem({ item: menuItem }))}
