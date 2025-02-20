@@ -30,14 +30,15 @@ export default function RootLayout() {
   return (
     // <NavigationContainer>
     <GestureHandlerRootView style={{ flex: 1 }}>
-     
-
-        <Stack screenOptions={{ headerShown: false }}>
+        <Stack screenOptions={{
+            headerShown: false,
+            animation: 'slide_from_right',
+            animationDuration: 200,
+            presentation: 'card'
+        }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
-        </Stack >
-
-
+        </Stack>
     </GestureHandlerRootView>
     // </NavigationContainer>
   );

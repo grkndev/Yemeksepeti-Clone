@@ -25,7 +25,7 @@ export default function HeaderComponent({
                     <Icons name='Heart' size={20} color={iconColor} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => {
-                    // router.push('/CartScreen')
+                    router.push('/(screens)/CartScreen/Screen')
                 }} className='p-2'>
                     <Icons name='ShoppingCart' size={20} color={iconColor} />
                     {
