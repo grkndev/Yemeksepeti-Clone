@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { SelectedOptions } from '../app/(screens)/ProductScreen/types'
+import { SelectedOptions } from '../components/screens/ProductScreen/types'
 
 interface CartItem {
   id: string
