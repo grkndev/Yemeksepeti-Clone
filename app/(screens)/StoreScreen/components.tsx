@@ -1,11 +1,13 @@
-import React, { useState } from 'react'
-import { View, Text, Image, TouchableOpacity, Pressable, ScrollView, FlatList, NativeScrollEvent } from 'react-native'
+import React, { useState, memo } from 'react'
+import { View, Text, Image as RNImage, TouchableOpacity, Pressable, ScrollView, FlatList, NativeScrollEvent } from 'react-native'
 import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated'
 import { useRouter } from 'expo-router'
+import { Image } from 'expo-image'
 
 import Icons from '@/components/Icons'
 import { truncate } from '@/utils/utils'
 import { CATEGORIES, MENU_ITEMS, Category, MenuItem } from './types'
+import Skeleton from '@/components/Skeleton'
 
 
 export function Header() {
@@ -203,26 +205,30 @@ export function Switch({
         </Pressable>
     )
 }
-export const MenuSection = () => {
+export const MenuSection = memo(() => {
     const [selectedCategory, setSelectedCategory] = React.useState(CATEGORIES[0].id);
     const menuListRef = React.useRef<FlatList>(null);
     const categoryScrollRef = React.useRef<ScrollView>(null);
     const [menuData, setMenuData] = React.useState(() => {
-        return CATEGORIES.map(category => ({
-            category,
-            items: MENU_ITEMS.filter(item => item.categoryId === category.id)
+        return MENU_ITEMS.map(item => ({
+            ...item,
+            isLoading: true
         }));
     });
     const router = useRouter()
 
-    // Kategori yüksekliklerini hesapla
     const getCategoryPositions = React.useCallback(() => {
         let positions: { [key: string]: number } = {};
         let currentPosition = 0;
 
-        menuData.forEach(section => {
+        // Kategorilere göre grupla
+        const groupedItems = CATEGORIES.map(category => ({
+            category,
+            items: menuData.filter(item => item.categoryId === category.id)
+        }));
+
+        groupedItems.forEach(section => {
             positions[section.category.id] = currentPosition;
-            // Kategori başlığı (40px) + her ürün için yükseklik (100px)
             currentPosition += 40 + (section.items.length * 100);
         });
 
@@ -231,18 +237,14 @@ export const MenuSection = () => {
 
     const handleCategoryPress = (categoryId: string) => {
         setSelectedCategory(categoryId);
-
-        // Kategorinin tam pozisyonunu hesapla
         const positions = getCategoryPositions();
         const targetPosition = positions[categoryId];
 
-        // FlatList'i doğru pozisyona scroll et
         menuListRef.current?.scrollToOffset({
             offset: targetPosition + 30,
             animated: true
         });
 
-        // Kategori listesini güncelle
         const categoryPosition = (parseInt(categoryId) - 1) * 80;
         categoryScrollRef.current?.scrollTo({
             x: categoryPosition,
@@ -253,11 +255,15 @@ export const MenuSection = () => {
     const handleScroll = React.useCallback((event: NativeScrollEvent) => {
         const y = event.contentOffset.y;
         const height = event.layoutMeasurement.height;
-        const contentHeight = event.contentSize.height;
 
-        // Her bir kategorinin yaklaşık yüksekliğini hesapla
-        const categoryHeights = menuData.map(section => {
-            // Her bir ürün için 100px + kategori başlığı için 40px
+        // Kategorilere göre grupla
+        const groupedItems = CATEGORIES.map(category => ({
+            category,
+            items: menuData.filter(item => item.categoryId === category.id)
+        }));
+
+        // Her bir kategorinin yüksekliğini hesapla
+        const categoryHeights = groupedItems.map(section => {
             return section.items.length * 100 + 40;
         });
 
@@ -275,18 +281,16 @@ export const MenuSection = () => {
 
         // Hangi kategorilerin görünür olduğunu bul
         let visibleCategoryId = selectedCategory;
-        for (let i = 0; i < menuData.length; i++) {
+        for (let i = 0; i < groupedItems.length; i++) {
             const categoryTop = categoryPositions[i];
             const categoryBottom = categoryTop + categoryHeights[i];
 
-            // Kategorinin son ürünü hala görünür alanda ise
             if (categoryTop <= visibleBottom && categoryBottom >= visibleTop) {
-                visibleCategoryId = menuData[i].category.id;
+                visibleCategoryId = groupedItems[i].category.id;
                 break;
             }
         }
 
-        // Eğer görünür kategori değiştiyse, kategori listesini güncelle
         if (visibleCategoryId !== selectedCategory) {
             setSelectedCategory(visibleCategoryId);
             const categoryPosition = (parseInt(visibleCategoryId) - 1) * 80;
@@ -303,8 +307,12 @@ export const MenuSection = () => {
         </Text>
     );
 
-    const renderItem = ({ item, index }: { item: MenuItem, index: number }) => (
-        <TouchableOpacity key={`menu-section-product-${index}`} onPress={() => router.push("/(screens)/ProductScreen/Screen")} className="p-4 border-b border-zinc-100 active:bg-zinc-50 bg-white">
+    const renderItem = React.useCallback(({ item, index }: { item: MenuItem & { isLoading: boolean }, index: number }) => (
+        <TouchableOpacity 
+            key={`menu-section-product-${index}`} 
+            onPress={() => router.push("/(screens)/ProductScreen/Screen")} 
+            className="p-4 border-b border-zinc-100 active:bg-zinc-50 bg-white"
+        >
             <View className="flex-row justify-between items-start gap-1">
                 <View className="flex-1">
                     <Text className="text-base font-semibold text-zinc-900 mb-1">
@@ -316,17 +324,31 @@ export const MenuSection = () => {
                     <Text className="text-sm text-zinc-500 my-2">
                         {item.description}
                     </Text>
-
                 </View>
                 {item.image && (
-                    <Image
-                        source={{ uri: item.image }}
-                        className="w-32 h-32 rounded-lg"
-                    />
+                    <View className="relative w-32 h-32">
+                        {item.isLoading && (
+                            <Skeleton className="absolute inset-0 z-10 rounded-lg" />
+                        )}
+                        <Image
+                            source={{ uri: item.image }}
+                            style={{ width: 128, height: 128, borderRadius: 8 }}
+                            contentFit="cover"
+                            transition={200}
+                            onLoadEnd={() => {
+                                const newData = [...menuData];
+                                const itemIndex = newData.findIndex(i => i.id === item.id);
+                                if (itemIndex !== -1) {
+                                    newData[itemIndex].isLoading = false;
+                                    setMenuData(newData);
+                                }
+                            }}
+                        />
+                    </View>
                 )}
             </View>
         </TouchableOpacity>
-    );
+    ), [menuData]);
 
     const getItemLayout = (data: any, index: number) => ({
         length: 120, // Yaklaşık bir öğe yüksekliği
@@ -348,16 +370,18 @@ export const MenuSection = () => {
                         <TouchableOpacity
                             key={category.id}
                             onPress={() => handleCategoryPress(category.id)}
-                            className={`px-4 py-2 mr-2 rounded-full border ${selectedCategory === category.id
+                            className={`px-4 py-2 mr-2 rounded-full border ${
+                                selectedCategory === category.id
                                 ? 'bg-ys border-ys'
                                 : 'bg-white border-zinc-200'
-                                }`}
+                            }`}
                         >
                             <Text
-                                className={`${selectedCategory === category.id
+                                className={`${
+                                    selectedCategory === category.id
                                     ? 'text-white font-semibold'
-                                    : 'text-zinc-700'
-                                    }`}
+                                    : 'text-zinc-400'
+                                }`}
                             >
                                 {category.name}
                             </Text>
@@ -370,24 +394,17 @@ export const MenuSection = () => {
             <FlatList
                 ref={menuListRef}
                 data={menuData}
-                renderItem={({ item, index }) => (
-                    <View key={`menu-section-${index}`}>
-                        {renderSectionHeader({ section: { category: item.category } })}
-                        <View className="bg-white">
-                            {item.items.map((menuItem: MenuItem, index: number) => renderItem({ item: menuItem, index }))}
-                        </View>
-                    </View>
-                )}
-                keyExtractor={(item) => item.category.id}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id}
                 onScroll={({ nativeEvent }) => handleScroll(nativeEvent)}
                 scrollEventThrottle={16}
                 getItemLayout={getItemLayout}
                 removeClippedSubviews={true}
-                initialNumToRender={3}
-                maxToRenderPerBatch={3}
+                initialNumToRender={5}
+                maxToRenderPerBatch={5}
                 windowSize={5}
                 contentContainerStyle={{ paddingBottom: 20 }}
             />
         </View>
     );
-};
+});

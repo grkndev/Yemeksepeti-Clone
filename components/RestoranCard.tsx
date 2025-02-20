@@ -1,10 +1,12 @@
 import { View, Text, TouchableOpacity, ImageBackground } from 'react-native'
-import React from 'react'
+import React, { memo, useState } from 'react'
 import Icons from './Icons'
 import Badge from './Badge'
 import { cn } from '@/utils/utils'
 import { RestoranDataType } from '@/utils/types/Restoran.type'
 import { useRouter } from 'expo-router'
+import { Image } from 'expo-image'
+import Skeleton from './Skeleton'
 
 const RestoranData: RestoranDataType = {
     name: 'Maydonoz Döner',
@@ -32,43 +34,53 @@ const RestoranData: RestoranDataType = {
     express: false
 }
 
-export default function RestoranCard({ data = RestoranData }: { data?: RestoranDataType }) {
+const RestoranCard = memo(({ data = RestoranData }: { data?: RestoranDataType }) => {
     const router = useRouter()
+    const [isLoading, setIsLoading] = useState(true)
+
     return (
-        <TouchableOpacity onPress={() => router.push("/(screens)/StoreScreen/Screen")} className='border border-zinc-300 w-[66vw] rounded-lg flex flex-col overflow-hidden'>
-            <ImageBackground
-                source={{ uri: data.image }}
-                resizeMethod='scale'
-                resizeMode='contain'
-                className='aspect-video w-full '
-            >
-                <View className='w-full p-2 flex flex-col items-center justify-between h-full'>
-                    <View className='w-full flex flex-row justify-between items-start'>
-                        <View className='flex flex-col items-start  gap-2'>
+        <TouchableOpacity 
+            onPress={() => router.push("/(screens)/StoreScreen/Screen")} 
+            className='border border-zinc-300 w-[66vw] rounded-lg flex flex-col overflow-hidden'
+        >
+            <View className='aspect-video w-full relative'>
+                {isLoading && (
+                    <Skeleton className='absolute inset-0 z-10' />
+                )}
+                <Image
+                    source={{ uri: data.image }}
+                    style={{ width: '100%', aspectRatio: 16/9 }}
+                    contentFit="cover"
+                    transition={200}
+                    onLoadEnd={() => setIsLoading(false)}
+                >
+                    <View className='w-full p-2 flex flex-col items-center justify-between h-full'>
+                        <View className='w-full flex flex-row justify-between items-start'>
+                            <View className='flex flex-col items-start  gap-2'>
+                                {
+                                    data.discount.map((item, index) => (
+                                        <Badge key={"Bage-" + item.type + "#" + index}>{item.value}</Badge>
+                                    ))
+                                }
+                            </View>
+                            <TouchableOpacity
+                                className=' bg-white p-2 rounded-full'
+                                onPress={() => { }}
+                            >
+                                <Icons name='Heart' color='#FA0250' size={16} />
+                            </TouchableOpacity>
+                        </View>
+                        <View className='w-full flex flex-row justify-between items-center'>
                             {
-                                data.discount.map((item, index) => (
-                                    <Badge key={"Bage-" + item.type + "#" + index}>{item.value}</Badge>
-                                ))
+                                data.sponsored && <Badge varriant='sponsored'><Icons name='BadgeCheck' color='#FA0250' size={16} /></Badge>
+                            }
+                            {
+                                data.promoted && <Badge varriant='promoted'>Öne Çıkan</Badge>
                             }
                         </View>
-                        <TouchableOpacity
-                            className=' bg-white p-2 rounded-full'
-                            onPress={() => { }}
-                        >
-                            <Icons name='Heart' color='#FA0250' size={16} />
-                        </TouchableOpacity>
                     </View>
-                    <View className='w-full flex flex-row justify-between items-center'>
-                        {
-                            data.sponsored && <Badge varriant='sponsored'><Icons name='BadgeCheck' color='#FA0250' size={16} /></Badge>
-                        }
-                        {
-                            data.promoted && <Badge varriant='promoted'>Öne Çıkan</Badge>
-                        }
-                    </View>
-                </View>
-
-            </ImageBackground>
+                </Image>
+            </View>
 
             <View className='p-2'>
                 <View className='w-full items-center flex flex-row justify-between'>
@@ -115,4 +127,6 @@ export default function RestoranCard({ data = RestoranData }: { data?: RestoranD
             </View>
         </TouchableOpacity>
     )
-}
+})
+
+export default RestoranCard
