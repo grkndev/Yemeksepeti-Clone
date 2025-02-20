@@ -28,9 +28,11 @@ export default function HeaderComponent({
                     // router.push('/CartScreen')
                 }} className='p-2'>
                     <Icons name='ShoppingCart' size={20} color={iconColor} />
-                    <View className='absolute -right-1 -bottom-1 aspect-square p-1 w-6'>
-                        <Text className=' text-xs bg-white rounded-full   text-center'>{totalItems}</Text>
-                    </View>
+                    {
+                        totalItems > 0 && <View className='absolute -right-1 -bottom-1 aspect-square p-1 w-6'>
+                            <Text className=' text-xs bg-white rounded-full   text-center'>{totalItems}</Text>
+                        </View>
+                    }
                 </TouchableOpacity>
             </View>
         </View>
