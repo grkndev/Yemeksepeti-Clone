@@ -22,6 +22,7 @@ interface StoreState {
   addToCart: (item: CartItem) => { success: boolean; message?: string }
   removeFromCart: (itemId: string) => void
   clearCart: () => void
+  updateCartItemQuantity: (itemId: string, newQuantity: number) => void
 }
 
 const isSameProduct = (item1: CartItem, item2: CartItem) => {
@@ -29,19 +30,10 @@ const isSameProduct = (item1: CartItem, item2: CartItem) => {
   if (item1.productId !== item2.productId) return false;
   
   // Seçilen opsiyonlar aynı olmalı
-  const options1 = Object.entries(item1.selectedOptions);
-  const options2 = Object.entries(item2.selectedOptions);
+  const options1 = Object.entries(item1.selectedOptions).sort();
+  const options2 = Object.entries(item2.selectedOptions).sort();
   
-  if (options1.length !== options2.length) return false;
-  
-  return options1.every(([key, value]) => {
-    const value2 = item2.selectedOptions[key];
-    if (Array.isArray(value) && Array.isArray(value2)) {
-      return value.length === value2.length && 
-             value.every(v => value2.includes(v));
-    }
-    return value === value2;
-  });
+  return JSON.stringify(options1) === JSON.stringify(options2);
 };
 
 export const useStore = create<StoreState>((set, get) => ({
@@ -103,6 +95,28 @@ export const useStore = create<StoreState>((set, get) => ({
       totalPrice: state.totalPrice + item.totalPrice
     }));
     return { success: true };
+  },
+
+  updateCartItemQuantity: (itemId: string, newQuantity: number) => {
+    if (newQuantity < 1) return;
+    
+    set((state) => {
+      const updatedCart = state.cart.map(item => {
+        if (item.id === itemId) {
+          return {
+            ...item,
+            quantity: newQuantity,
+            totalPrice: item.price * newQuantity
+          };
+        }
+        return item;
+      });
+
+      return {
+        cart: updatedCart,
+        totalPrice: updatedCart.reduce((total, item) => total + item.totalPrice, 0)
+      };
+    });
   },
 
   removeFromCart: (itemId) =>

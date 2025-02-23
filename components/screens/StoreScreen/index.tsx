@@ -8,6 +8,7 @@ import Icons from '@/components/Icons'
 import { truncate } from '@/utils/utils'
 import { CATEGORIES, MENU_ITEMS, Category, MenuItem } from './types'
 import Skeleton from '@/components/Skeleton'
+import { FlashList } from '@shopify/flash-list'
 
 
 function Header() {
@@ -205,9 +206,10 @@ function Switch({
         </Pressable>
     )
 }
-const MenuSection = memo(({ onLoadComplete }: { onLoadComplete?: () => void }) => {
+const MenuSection = memo(() => {
+    const [isLoading, setIsLoading] = useState(true)
     const [selectedCategory, setSelectedCategory] = React.useState(CATEGORIES[0].id);
-    const menuListRef = React.useRef<FlatList>(null);
+    const menuListRef = React.useRef<FlashList<any>>(null);
     const categoryScrollRef = React.useRef<ScrollView>(null);
     const [menuData, setMenuData] = React.useState(() => {
         return MENU_ITEMS.map(item => ({
@@ -216,11 +218,6 @@ const MenuSection = memo(({ onLoadComplete }: { onLoadComplete?: () => void }) =
         }));
     });
     const router = useRouter()
-
-    React.useEffect(() => {
-        // Menü yüklendiğinde callback'i çağır
-        onLoadComplete?.()
-    }, [])
 
     const getCategoryPositions = React.useCallback(() => {
         let positions: { [key: string]: number } = {};
@@ -316,7 +313,7 @@ const MenuSection = memo(({ onLoadComplete }: { onLoadComplete?: () => void }) =
         <TouchableOpacity
             key={`menu-section-product-${index}`}
             onPress={() => router.push("/(screens)/ProductScreen/Screen")}
-            className="p-4 border-b border-zinc-100 active:bg-zinc-50 bg-white"
+            className="p-4 border-b border-zinc-100 active:bg-zinc-50  bg-red-500"
         >
             <View className="flex-row justify-between items-start gap-1">
                 <View className="flex-1">
@@ -331,7 +328,7 @@ const MenuSection = memo(({ onLoadComplete }: { onLoadComplete?: () => void }) =
                     </Text>
                 </View>
                 {item.image && (
-                    <View className="relative w-32 h-32">
+                    <View className="relative w-32 h-32 ">
                         {item.isLoading && (
                             <Skeleton className="absolute inset-0 z-10 rounded-lg" />
                         )}
@@ -356,7 +353,7 @@ const MenuSection = memo(({ onLoadComplete }: { onLoadComplete?: () => void }) =
     ), [menuData]);
 
     const getItemLayout = (data: any, index: number) => ({
-        length: 120, // Yaklaşık bir öğe yüksekliği
+        length: 120,
         offset: 120 * index,
         index,
     });
@@ -376,14 +373,14 @@ const MenuSection = memo(({ onLoadComplete }: { onLoadComplete?: () => void }) =
                             key={category.id}
                             onPress={() => handleCategoryPress(category.id)}
                             className={`px-4 py-2 mr-2 rounded-full border ${selectedCategory === category.id
-                                    ? 'bg-ys border-ys'
-                                    : 'bg-white border-zinc-200'
+                                ? 'bg-ys border-ys'
+                                : 'bg-white border-zinc-200'
                                 }`}
                         >
                             <Text
                                 className={`${selectedCategory === category.id
-                                        ? 'text-white font-semibold'
-                                        : 'text-zinc-400'
+                                    ? 'text-white font-semibold'
+                                    : 'text-zinc-400'
                                     }`}
                             >
                                 {category.name}
@@ -393,20 +390,26 @@ const MenuSection = memo(({ onLoadComplete }: { onLoadComplete?: () => void }) =
                 </ScrollView>
             </View>
 
-            {/* Menü listesi */}
-            <FlatList
+            {isLoading && (
+                <View className="flex-1">
+                    <Skeleton />
+                </View>
+            )}
+            <FlashList
                 ref={menuListRef}
                 data={menuData}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
                 onScroll={({ nativeEvent }) => handleScroll(nativeEvent)}
                 scrollEventThrottle={16}
-                getItemLayout={getItemLayout}
-                removeClippedSubviews={true}
-                initialNumToRender={5}
-                maxToRenderPerBatch={5}
-                windowSize={5}
+                // getItemLayout={getItemLayout}
+                onLoad={() => { setIsLoading(false) }}
+                // removeClippedSubviews={true}
+                // initialNumToRender={5}
+                // maxToRenderPerBatch={5}
+                // windowSize={5}
                 contentContainerStyle={{ paddingBottom: 20 }}
+                estimatedItemSize={20}
             />
         </View>
     );
