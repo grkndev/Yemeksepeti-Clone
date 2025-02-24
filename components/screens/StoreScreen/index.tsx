@@ -313,7 +313,7 @@ const MenuSection = memo(() => {
         <TouchableOpacity
             key={`menu-section-product-${index}`}
             onPress={() => router.push("/(screens)/ProductScreen/Screen")}
-            className="p-4 border-b border-zinc-100 active:bg-zinc-50  bg-red-500"
+            className="p-4 border-b border-zinc-100 active:bg-zinc-50  "
         >
             <View className="flex-row justify-between items-start gap-1">
                 <View className="flex-1">
