@@ -20,13 +20,26 @@
     },
     "web": {
       "bundler": "metro",
-      "output": "static",
+      "output": "server",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router",
       [
-        "expo-splash-screen", {
+        "expo-router",
+        {
+          "origin": "https://stripe-test-react-native.expo.app"
+        }
+      ],
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "its.required.for.apple.pay",
+          "publishableKey": "pk_test_51MTt1YGWih1Eis2OSEyZgWTpqDnimIqB0oGJu927bfaK3lmak8CesAKjMn9AUnHU77MFzGspY2bZMfVasQUTY7vb00yNw8c8cP"
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
           "backgroundColor": "#FA0250",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 1024
@@ -37,6 +50,9 @@
       "typedRoutes": true
     },
     "extra": {
+      "router": {
+        "origin": "https://stripe-test-react-native.expo.app"
+      },
       "eas": {
         "projectId": "0f1d2713-407a-45b5-8a26-c39c9e7ee425"
       }
