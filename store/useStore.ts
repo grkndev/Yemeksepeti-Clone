@@ -15,14 +15,35 @@ interface CartItem {
   storeName: string
 }
 
+// Define possible order statuses
+export type OrderStatus = 'preparing' | 'onTheWay' | 'delivered' | 'cancelled'
+
+// Define active order interface
+export interface ActiveOrder {
+  id: string
+  items: CartItem[]
+  totalPrice: number
+  storeId: string
+  storeName: string
+  orderDate: Date
+  status: OrderStatus
+  deliveryAddress: string
+  courierNote?: string
+  paymentMethod: string
+}
+
 interface StoreState {
   cart: CartItem[]
   totalPrice: number
   currentStoreId: string | null
+  activeOrders: ActiveOrder[]
   addToCart: (item: CartItem) => { success: boolean; message?: string }
   removeFromCart: (itemId: string) => void
   clearCart: () => void
   updateCartItemQuantity: (itemId: string, newQuantity: number) => void
+  createOrder: (orderDetails: { deliveryAddress: string; courierNote?: string; paymentMethod: string }) => string
+  getActiveOrderById: (orderId: string) => ActiveOrder | undefined
+  cancelOrder: (orderId: string) => void
 }
 
 const isSameProduct = (item1: CartItem, item2: CartItem) => {
@@ -40,6 +61,7 @@ export const useStore = create<StoreState>((set, get) => ({
   cart: [],
   totalPrice: 0,
   currentStoreId: null,
+  activeOrders: [],
 
   addToCart: (item) => {
     const state = get();
@@ -144,5 +166,50 @@ export const useStore = create<StoreState>((set, get) => ({
       cart: [],
       totalPrice: 0,
       currentStoreId: null
-    })
+    }),
+
+  createOrder: (orderDetails) => {
+    const { cart, totalPrice, currentStoreId } = get();
+    
+    if (cart.length === 0 || !currentStoreId) {
+      throw new Error('Cannot create order with empty cart');
+    }
+    
+    const storeName = cart[0].storeName;
+    const orderId = Date.now().toString(); // Simple ID generation
+    
+    const newOrder: ActiveOrder = {
+      id: orderId,
+      items: [...cart],
+      totalPrice,
+      storeId: currentStoreId,
+      storeName,
+      orderDate: new Date(),
+      status: 'preparing',
+      deliveryAddress: orderDetails.deliveryAddress,
+      courierNote: orderDetails.courierNote,
+      paymentMethod: orderDetails.paymentMethod
+    };
+    
+    set(state => ({
+      activeOrders: [...state.activeOrders, newOrder],
+      // Clear cart after creating order
+      cart: [],
+      totalPrice: 0,
+      currentStoreId: null
+    }));
+    
+    return orderId;
+  },
+  
+  getActiveOrderById: (orderId) => {
+    const { activeOrders } = get();
+    return activeOrders.find(order => order.id === orderId);
+  },
+  
+  cancelOrder: (orderId) => {
+    set(state => ({
+      activeOrders: state.activeOrders.filter(order => order.id !== orderId)
+    }));
+  }
 })) 

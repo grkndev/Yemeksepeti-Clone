@@ -8,6 +8,7 @@ import Promotions from '@/components/Home/Promotions'
 import Kitchens from '@/components/Home/Kitchens'
 import PopularBrands from '@/components/Home/PopularBrands'
 import ExpressDelivery from '@/components/Home/ExpressDelivery'
+import ActiveOrderStatusBar from '@/components/ActiveOrderStatusBar'
 
 
 export default function HomeScreen() {
@@ -69,6 +70,7 @@ export default function HomeScreen() {
 
             </View>
           </Animated.ScrollView>
+          <ActiveOrderStatusBar />
         </View>
       </View>
     </View>

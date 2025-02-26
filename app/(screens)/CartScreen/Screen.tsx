@@ -257,6 +257,7 @@ export default function CartScreen() {
             </View>
           )}
           <TouchableOpacity
+          onPress={() => router.push('/(screens)/OrderScreen/Screen')}
             className={`p-4 rounded-lg ${totalPrice >= MIN_CART_AMOUNT ? 'bg-ys' : 'bg-gray-300'}`}
             disabled={totalPrice < MIN_CART_AMOUNT}
           >
