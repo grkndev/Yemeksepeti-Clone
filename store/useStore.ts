@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { SelectedOptions } from '../app/(screens)/ProductScreen/types'
+import { SelectedOptions } from '../components/screens/ProductScreen/types'
 
 interface CartItem {
   id: string
@@ -15,13 +15,35 @@ interface CartItem {
   storeName: string
 }
 
+// Define possible order statuses
+export type OrderStatus = 'preparing' | 'onTheWay' | 'delivered' | 'cancelled'
+
+// Define active order interface
+export interface ActiveOrder {
+  id: string
+  items: CartItem[]
+  totalPrice: number
+  storeId: string
+  storeName: string
+  orderDate: Date
+  status: OrderStatus
+  deliveryAddress: string
+  courierNote?: string
+  paymentMethod: string
+}
+
 interface StoreState {
   cart: CartItem[]
   totalPrice: number
   currentStoreId: string | null
+  activeOrders: ActiveOrder[]
   addToCart: (item: CartItem) => { success: boolean; message?: string }
   removeFromCart: (itemId: string) => void
   clearCart: () => void
+  updateCartItemQuantity: (itemId: string, newQuantity: number) => void
+  createOrder: (orderDetails: { deliveryAddress: string; courierNote?: string; paymentMethod: string }) => string
+  getActiveOrderById: (orderId: string) => ActiveOrder | undefined
+  cancelOrder: (orderId: string) => void
 }
 
 const isSameProduct = (item1: CartItem, item2: CartItem) => {
@@ -29,25 +51,17 @@ const isSameProduct = (item1: CartItem, item2: CartItem) => {
   if (item1.productId !== item2.productId) return false;
   
   // Seçilen opsiyonlar aynı olmalı
-  const options1 = Object.entries(item1.selectedOptions);
-  const options2 = Object.entries(item2.selectedOptions);
+  const options1 = Object.entries(item1.selectedOptions).sort();
+  const options2 = Object.entries(item2.selectedOptions).sort();
   
-  if (options1.length !== options2.length) return false;
-  
-  return options1.every(([key, value]) => {
-    const value2 = item2.selectedOptions[key];
-    if (Array.isArray(value) && Array.isArray(value2)) {
-      return value.length === value2.length && 
-             value.every(v => value2.includes(v));
-    }
-    return value === value2;
-  });
+  return JSON.stringify(options1) === JSON.stringify(options2);
 };
 
 export const useStore = create<StoreState>((set, get) => ({
   cart: [],
   totalPrice: 0,
   currentStoreId: null,
+  activeOrders: [],
 
   addToCart: (item) => {
     const state = get();
@@ -105,6 +119,28 @@ export const useStore = create<StoreState>((set, get) => ({
     return { success: true };
   },
 
+  updateCartItemQuantity: (itemId: string, newQuantity: number) => {
+    if (newQuantity < 1) return;
+    
+    set((state) => {
+      const updatedCart = state.cart.map(item => {
+        if (item.id === itemId) {
+          return {
+            ...item,
+            quantity: newQuantity,
+            totalPrice: item.price * newQuantity
+          };
+        }
+        return item;
+      });
+
+      return {
+        cart: updatedCart,
+        totalPrice: updatedCart.reduce((total, item) => total + item.totalPrice, 0)
+      };
+    });
+  },
+
   removeFromCart: (itemId) =>
     set((state) => {
       const itemToRemove = state.cart.find(item => item.id === itemId);
@@ -130,5 +166,50 @@ export const useStore = create<StoreState>((set, get) => ({
       cart: [],
       totalPrice: 0,
       currentStoreId: null
-    })
+    }),
+
+  createOrder: (orderDetails) => {
+    const { cart, totalPrice, currentStoreId } = get();
+    
+    if (cart.length === 0 || !currentStoreId) {
+      throw new Error('Cannot create order with empty cart');
+    }
+    
+    const storeName = cart[0].storeName;
+    const orderId = Date.now().toString(); // Simple ID generation
+    
+    const newOrder: ActiveOrder = {
+      id: orderId,
+      items: [...cart],
+      totalPrice,
+      storeId: currentStoreId,
+      storeName,
+      orderDate: new Date(),
+      status: 'preparing',
+      deliveryAddress: orderDetails.deliveryAddress,
+      courierNote: orderDetails.courierNote,
+      paymentMethod: orderDetails.paymentMethod
+    };
+    
+    set(state => ({
+      activeOrders: [...state.activeOrders, newOrder],
+      // Clear cart after creating order
+      cart: [],
+      totalPrice: 0,
+      currentStoreId: null
+    }));
+    
+    return orderId;
+  },
+  
+  getActiveOrderById: (orderId) => {
+    const { activeOrders } = get();
+    return activeOrders.find(order => order.id === orderId);
+  },
+  
+  cancelOrder: (orderId) => {
+    set(state => ({
+      activeOrders: state.activeOrders.filter(order => order.id !== orderId)
+    }));
+  }
 })) 

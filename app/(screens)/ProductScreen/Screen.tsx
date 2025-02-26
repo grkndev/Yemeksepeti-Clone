@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import * as Crypto from 'expo-crypto'
 import data from './data'
-import { ProductHeader, OptionGroup, AddToCartButton, ProductNote } from './components'
-import { SelectedOptions } from './types'
+import Components from './components'
+import { SelectedOptions } from '../../../components/screens/ProductScreen/types'
 import { useStore } from '../../../store/useStore'
 import { useRouter } from 'expo-router'
 import { useLocalSearchParams } from 'expo-router'
@@ -105,7 +105,7 @@ export default function ProductScreen() {
     };
 
     const result = addToCart(cartItem);
-    
+
     if (!result.success && result.message) {
       Alert.alert(
         "Farklı Mağaza",
@@ -142,7 +142,7 @@ export default function ProductScreen() {
   return (
     <View className="flex-1 bg-white">
       <ScrollView>
-        <ProductHeader
+        <Components.ProductHeader
           name={data.name}
           description={data.description}
           image={data.image}
@@ -153,7 +153,7 @@ export default function ProductScreen() {
 
         <View className="p-4">
           {data.options.map((option, index) => (
-            <OptionGroup
+            <Components.OptionGroup
               key={index}
               name={option.name}
               required={option.required}
@@ -164,13 +164,13 @@ export default function ProductScreen() {
           ))}
         </View>
 
-        <ProductNote
+        <Components.ProductNote
           note={note}
           onChangeNote={setNote}
         />
       </ScrollView>
 
-      <AddToCartButton
+      <Components.AddToCartButton
         onPress={handleAddToCart}
         disabled={!areRequiredOptionsSelected()}
         quantity={quantity}
