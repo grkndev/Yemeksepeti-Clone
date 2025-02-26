@@ -7,7 +7,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { NavigationContainer } from '@react-navigation/native';
+import StripeProvider from '@/components/Providers/Stripe';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -30,15 +31,19 @@ export default function RootLayout() {
   return (
     // <NavigationContainer>
     <GestureHandlerRootView style={{ flex: 1 }}>
-        <Stack screenOptions={{
+      <StripeProvider>
+        <BottomSheetModalProvider>
+          <Stack screenOptions={{
             headerShown: false,
             animation: 'simple_push',
             animationDuration: 200,
             presentation: 'card'
-        }}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
+          }}>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+        </BottomSheetModalProvider >
+      </StripeProvider>
     </GestureHandlerRootView>
     // </NavigationContainer>
   );

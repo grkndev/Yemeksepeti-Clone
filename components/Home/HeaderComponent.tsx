@@ -16,7 +16,7 @@ export default function HeaderComponent({
                 <Icons name='MapPin' size={24} color={iconColor} />
                 <View className='flex flex-col justify-center items-start'>
                     <Text className={`${textColor} font-semibold text-lg`}>Ev</Text>
-                    <Text className={`${textColor} text-xs`}>Yirmiikigün 91041</Text>
+                    <Text className={`${textColor} text-xs`}>Mahalle 91000</Text>
                 </View>
 
             </View>
