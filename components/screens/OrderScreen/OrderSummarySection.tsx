@@ -11,7 +11,7 @@ export default function OrderSummarySection({
   cart, 
   totalPrice 
 }: OrderSummarySectionProps) {
-  const deliveryFee = 15.99
+  const deliveryFee = 0.00
   const finalTotal = totalPrice + deliveryFee
   
   return (

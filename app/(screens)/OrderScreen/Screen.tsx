@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native'
 import { useStore } from '@/store/useStore'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -10,6 +10,7 @@ import PaymentMethodSection from '@/components/screens/OrderScreen/PaymentMethod
 import OrderSummarySection from '@/components/screens/OrderScreen/OrderSummarySection'
 import AcceptTermsSection from '@/components/screens/OrderScreen/AcceptTermsSection'
 import CheckoutForm from '@/components/Checkout/CheckoutForm.native'
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
 
 export default function OrderScreen() {
   const router = useRouter()
@@ -18,7 +19,27 @@ export default function OrderScreen() {
   const [courierNote, setCourierNote] = useState('')
   const [paymentMethod, setPaymentMethod] = useState<'creditCard'>('creditCard')
   const [acceptedTerms, setAcceptedTerms] = useState(false)
+  const [orderId, setOrderId] = useState<string | null>(null)
 
+
+  // ref
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  // variables
+  const snapPoints = useMemo(() => ["65%"], []);
+
+
+  // renders
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+      />
+    ),
+    []
+  );
   const handlePlaceOrder = () => {
     if (!deliveryAddress) {
       Alert.alert('Hata', 'Lütfen teslimat adresi giriniz')
@@ -29,7 +50,7 @@ export default function OrderScreen() {
       Alert.alert('Hata', 'Lütfen sözleşmeyi kabul ediniz')
       return
     }
-
+    bottomSheetModalRef.current?.present();
     try {
       // Sipariş oluştur
       const orderId = createOrder({
@@ -37,23 +58,9 @@ export default function OrderScreen() {
         courierNote,
         paymentMethod
       })
+      setOrderId(orderId)
 
-      // Başarılı sipariş alert'i göster ve yönlendir
-      Alert.alert(
-        'Sipariş Onayı',
-        'Siparişiniz başarıyla alındı!',
-        [
-          {
-            text: 'Siparişimi Takip Et',
-            onPress: () => {
-              router.push({
-                pathname: '/(screens)/ActiveOrdersScreen/Screen',
-                params: { orderId }
-              })
-            }
-          }
-        ]
-      )
+
     } catch (error) {
       Alert.alert('Hata', 'Siparişiniz oluşturulurken bir hata oluştu')
     }
@@ -130,7 +137,11 @@ export default function OrderScreen() {
 
       {/* Alt Buton */}
       <View className="p-4 border-t border-gray-200">
-        <CheckoutForm amount={totalPrice} onSuccess={handlePlaceOrder} disabled={!acceptedTerms || deliveryAddress.length < 1} />
+        <CheckoutForm amount={
+          cart.reduce((acc, item) => acc + item.price * item.quantity, 0)
+        } onSuccess={()=>{
+          handlePlaceOrder()
+        }} disabled={!acceptedTerms || deliveryAddress.length < 1} />
         {/* <TouchableOpacity
           className={`py-3 rounded-lg items-center ${acceptedTerms ? 'bg-ys' : 'bg-gray-400'}`}
           disabled={!acceptedTerms}
@@ -139,6 +150,35 @@ export default function OrderScreen() {
           <Text className="text-white font-bold text-lg">Siparişi Tamamla</Text>
         </TouchableOpacity> */}
       </View>
+
+
+
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        index={0}
+        snapPoints={snapPoints}
+        backdropComponent={renderBackdrop}
+        enableDynamicSizing={false}
+      >
+        <BottomSheetView className="flex-1 items-center justify-center p-8">
+          <View className="flex-col items-center gap-4 mb-16">
+            <Icons strokeWidth={1} name='CircleCheck' size={128} color={"#FA0250"} />
+            <Text className="font-bold text-2xl text-center">Ödeme başarılı!{"\n"}Bizi tercih ettiğiniz için teşekkürler. 🎉</Text>
+          </View>
+          <TouchableOpacity className="bg-ys w-full p-4 rounded-3xl absolute bottom-8" onPress={() => {
+           
+            bottomSheetModalRef.current?.close()
+            router.push({
+              pathname: '/(screens)/ActiveOrdersScreen/Screen',
+              params: { orderId }
+            })
+           
+           
+          }}>
+            <Text className="text-center text-white text-lg font-bold">Siparişlerime git</Text>
+          </TouchableOpacity>
+        </BottomSheetView>
+      </BottomSheetModal>
     </SafeAreaView>
   )
 }
