@@ -12,7 +12,6 @@ export interface MenuItem {
 }
 export const CATEGORIES: Category[] = [
     { id: '1', name: 'Başlangıçlar' },
-    { id: '2', name: 'Ana Yemekler' },
     { id: '3', name: 'Pizzalar' },
     { id: '4', name: 'Burgerler' },
     { id: '5', name: 'İçecekler' },
@@ -21,8 +20,6 @@ export const CATEGORIES: Category[] = [
 export const MENU_ITEMS: MenuItem[] = [
     { id: '1', categoryId: '1', name: 'Mercimek Çorbası', description: 'Geleneksel lezzet', price: 45, image: 'http://placehold.jp/200x200.png' },
     { id: '2', categoryId: '1', name: 'Karışık Salata', description: 'Mevsim yeşillikleri', price: 55, image: 'http://placehold.jp/200x200.png' },
-    { id: '3', categoryId: '2', name: 'Izgara Köfte', description: 'Özel baharatlarla', price: 120, image: 'http://placehold.jp/200x200.png' },
-    { id: '4', categoryId: '2', name: 'Tavuk Şiş', description: 'Özel soslu', price: 100, image: 'http://placehold.jp/200x200.png' },
     { id: '5', categoryId: '3', name: 'Margarita', description: 'Mozarella peyniri', price: 95, image: 'http://placehold.jp/200x200.png' },
     { id: '6', categoryId: '3', name: 'Karışık Pizza', description: 'Özel malzemeler', price: 125, image: 'http://placehold.jp/200x200.png' },
     { id: '7', categoryId: '4', name: 'Klasik Burger', description: 'Dana eti', price: 110, image: 'http://placehold.jp/200x200.png' },

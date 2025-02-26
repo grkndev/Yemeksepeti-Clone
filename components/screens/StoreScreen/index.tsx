@@ -96,7 +96,7 @@ function StoreInfo() {
                 </>
             ) : (
                 <>
-                    <Text className='font-bold text-xl'>Maydonoz Döner</Text>
+                    <Text className='font-bold text-xl'>Domino's Pizza</Text>
                     <View>
                         <View className='flex flex-row items-center gap-2'>
                             <Rating rating={3.6} />

@@ -9,7 +9,7 @@ import { Image } from 'expo-image'
 import Skeleton from './Skeleton'
 
 const RestoranData: RestoranDataType = {
-    name: 'Maydonoz Döner',
+    name: 'Domino\'s Pizza',
     rating: 4.5,
     ratingCount: 500,
     price: '₺₺',
